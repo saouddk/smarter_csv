@@ -176,7 +176,7 @@ module SmarterCSV
         print "processing file line %10d, csv line %10d\r" % [@file_line_count, @csv_line_count] if options[:verbose]
         next if line =~ options[:comment_regexp] # ignore all comment lines if there are any
 
-
+        line.gsub!(', ', '|')
 
         # cater for the quoted csv data containing the row separator carriage return character
         # in which case the row data will be split across multiple lines (see the sample content in spec/fixtures/carriage_returns_rn.csv)
