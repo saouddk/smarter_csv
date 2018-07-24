@@ -166,7 +166,7 @@ module SmarterCSV
       # instead of readline, which accumulates the lines in an array, we should use `open.each_line` for large files, which only returns one line at a time
 
       while ! f.eof?    # we can't use f.readlines() here, because this would read the whole file into memory at once, and eof => true
-        line = f.readline  # read one line.. this uses the input_record_separator $/ which we set previously!
+        line = f.readline.gsub(', ', '|')  # read one line.. this uses the input_record_separator $/ which we set previously!
 
         # replace invalid byte sequence in UTF-8 with question mark to avoid errors
         line = line.force_encoding('utf-8').encode('utf-8', invalid: :replace, undef: :replace, replace: options[:invalid_byte_sequence]) if options[:force_utf8] || options[:file_encoding] !~ /utf-8/i
@@ -175,8 +175,6 @@ module SmarterCSV
         @csv_line_count += 1
         print "processing file line %10d, csv line %10d\r" % [@file_line_count, @csv_line_count] if options[:verbose]
         next if line =~ options[:comment_regexp] # ignore all comment lines if there are any
-
-        line.gsub!(', ', '|')
 
         # cater for the quoted csv data containing the row separator carriage return character
         # in which case the row data will be split across multiple lines (see the sample content in spec/fixtures/carriage_returns_rn.csv)
